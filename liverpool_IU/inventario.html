@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="esp"> 
+<head>
+    <meta charset="UTF-8">
+    <title>Inventario</title>
+    <link rel="stylesheet" href="liverpool_IU/style.css">
+</head>
+<body>
+    <div>
+        <h1>Inventario</h1>
+        <h2>Elige la acción</h2>
+
+    </div>
+    <div class="container">
+        <header>
+            <a href="index.html">← Inicio</a>
+            <p>Sistema de Inevntario</p>
+            <p>A continuación se despliegan todos los productos con sus precios actuales y existencias asi como promociones existentes.</p>
+        </header>
+
+    <main>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Marca</th>
+                    <th>Categoría</th>
+                    <th>Precio</th>
+                    <th>Promoción</th>
+                    <th></th>
+                    <th>Stock</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-body">
+            </tbody>
+        </table>
+    </main>
+
+	              	<?php
+								   	include 'Db.php';
+								   	$pdo = Database::connect();
+								   	$sql = 'SELECT * FROM productos natural join marca ORDER BY idauto';
+				 				   	foreach ($pdo->query($sql) as $row) {
+											echo '<tr>';
+			    					   	echo '<td>'. $row['nombrec'] . '</td>';
+			    					  	echo '<td>'. $row['nombrem'] . '</td>';
+			                            echo '<td>';    echo ($row['ac'])?"SI":"NO"; echo'</td>';
+			                            echo '<td width=250>';
+			    					   	echo '<a class="btn" href="read.php?id='.$row['idauto'].'">Detalles</a>';
+			    					   	echo '&nbsp;';
+			    					  	echo '<a class="btn btn-success" href="update.php?id='.$row['idauto'].'">Actualizar</a>';
+			    					   	echo '&nbsp;';
+			    					   	echo '<a class="btn btn-danger" href="delete.php?id='.$row['idauto'].'">Eliminar</a>';
+			    					   	echo '</td>';
+										  echo '</tr>';
+								    }
+								   	Database::disconnect();
+				  				?>
+			    		</tbody>
+		      </table>
+
+		    </div>
+
+	   
+
+
+    </div>
+
+</body>
+
+
+
+</html>
