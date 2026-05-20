@@ -1,13 +1,8 @@
 
-<?php include 'components/header.php'; ?>
 
-<?php include 'components/navbar.php'; ?>
-<div class="body-inv">
-        <h1>Promociones</h1>
-    </div>
 <?php
 require_once 'db.php';
-
+$pdo = Database::connect();
 $mensaje = '';
 $tipo_msg = '';
 
@@ -118,19 +113,11 @@ foreach ($relaciones as $r) {
     $prods_por_promo[$r['id_promo']][] = $r['nombre'];
 }
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Promociones - Liverpool</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <header class="topbar">
-        <h1>Liverpool</h1>
-        <span class="subtitle">Descuentos y Promociones</span>
-        <a class="back" href="index.php">← Menú</a>
-    </header>
+<?php include 'components/header.php'; ?>
+
+<?php include 'components/navbar.php'; ?>
+<div class="body-inv">
+        <h1>Descuentos y Promociones</h1>
 
     <main class="container wide">
 
@@ -236,6 +223,6 @@ foreach ($relaciones as $r) {
             </tbody>
         </table>
     </main>
-
+</div>
     
 <?php include 'components/footer.php'; ?>

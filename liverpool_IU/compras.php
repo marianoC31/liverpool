@@ -1,3 +1,11 @@
+<?php
+require_once 'Db.php';
+ 
+$pdo = Database::connect();
+$mensaje = '';
+$tipo_msg = '';
+?>
+
 <?php include 'components/header.php'; ?>
 
 <?php include 'components/navbar.php'; ?>
