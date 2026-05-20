@@ -1,3 +1,10 @@
+
+<?php include 'components/header.php'; ?>
+
+<?php include 'components/navbar.php'; ?>
+<div class="body-inv">
+        <h1>Promociones</h1>
+    </div>
 <?php
 require_once 'db.php';
 
@@ -229,5 +236,6 @@ foreach ($relaciones as $r) {
             </tbody>
         </table>
     </main>
-</body>
-</html>
+
+    
+<?php include 'components/footer.php'; ?>
