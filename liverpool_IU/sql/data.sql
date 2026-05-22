@@ -36,7 +36,7 @@ INSERT INTO promocion VALUES
 (1, 20, '2026-01-01', '2026-04-15', 'Rebajas Enero',  'DESCUENTO', 'inactiva'),
 (2, 10, '2026-04-01', '2026-06-30', 'Promo Primavera','DESCUENTO', 'activa');
 
---Items y productos
+--  Items y productos
 INSERT INTO item VALUES
 (1, 'PRODUCTO', 'Playera Casual'),
 (2, 'PRODUCTO', 'iPhone 15'),
@@ -55,7 +55,7 @@ INSERT INTO producto_promo VALUES
 (1, 2), 
 (3, 2); 
 
---Proveedores 
+--  Proveedores 
 INSERT INTO compra VALUES
 (1, 1, '2026-03-01', 15000.00, 'RECIBIDO'),
 (2, 2, '2026-03-05', 95000.00, 'RECIBIDO'),
@@ -80,7 +80,7 @@ INSERT INTO inventario VALUES
 (4, 4,  50,  5, CURRENT_TIMESTAMP),
 (5, 5,  20,  2, CURRENT_TIMESTAMP);
 
---Tarjetas
+--  Tarjetas
 INSERT INTO tarjeta VALUES
 (1, 'LIVERPOOL'),
 (2, 'LIVERPOOL'),
@@ -115,7 +115,7 @@ INSERT INTO monedero_cliente VALUES
 (3, 3, 0, 0.00, NOW(), 'activo');
 
 
---Ventas
+--  Ventas
 INSERT INTO venta VALUES (1, 1, 1, 1, 897.30, '2026-04-10 10:30:00');
 
 INSERT INTO venta_detalle VALUES
@@ -148,7 +148,7 @@ INSERT INTO venta_detalle VALUES
 (7, 5, 2, 1, 18999.00, 0.00, 18999.00);
 
 
---Pagos
+--  Pagos
 INSERT INTO pago VALUES
 (1, 1, 1, 897.30, '2026-04-10 10:30:00'),
 (2, 2, 3, 15199.20, '2026-04-10 11:00:00'),
@@ -162,7 +162,7 @@ INSERT INTO pago_tarjeta VALUES
 (4, 1),
 (5, 2);
 
---Movimientos de puntos
+--  Movimientos de puntos
 INSERT INTO movimiento_puntos VALUES
 (1, 1, 1, 1, 'ACUMULACION', 89, '2026-04-10 10:30:00', 'Liverpool Perisur'),
 (2, 2, 2, 2, 'ACUMULACION', 151, '2026-04-10 11:00:00', 'Liverpool Perisur'),
