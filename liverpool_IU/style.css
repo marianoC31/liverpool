@@ -1,98 +1,388 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
 
+/* VARIABLES */
+
 :root{
+
     --rosa-liverpool: #e10198;
     --rosa-hover: #c40082;
     --gris-texto: #555;
+    --gris-claro: #f0f0f0;
     --fondo: #f7f7f7;
     --blanco: #ffffff;
+    --sombra: rgba(0,0,0,0.08);
+
 }
 
+/* RESET */
+
 *{
+
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: "Inter", sans-serif;
-    text-align: center;
-}
-body{
-    background-color: var(--fondo);
-}
-.body-inv{
-    display: flex;
-    flex-direction: column;
-    gap: 80px;
-    min-height: 20vh;
-    justify-content: center;
-    background-color: var(--fondo);
-    padding: 40px;
-}
-.body-menu{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 60px;
-    min-height: 100vh;
-    background: linear-gradient(135deg, #f5a1d96b 0%, #ffe5f3 100%);
-    padding: 20px;
-}
-.nav-liverpool{
-    background-color: var(--rosa-liverpool);
-    padding: 15px 30px;
-    color: white; 
-}
-.contenedor{
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    max-width: 420px;
-    border-radius: 20px;
-    padding: 40px;
-    box-shadow: 5px 5px 0 var(--rosa-liverpool);
-    text-align: center;
+
 }
 
+/* BODY */
+
+body{
+
+    background-color: var(--fondo);
+    color: #333;
+
+}
+
+/* NAVBAR */
+
+.nav-liverpool{
+
+    background-color: var(--rosa-liverpool);
+
+    padding: 15px 30px;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+
+}
+
+/* LOGO */
+
+.navbar-brand{
+
+    color: white !important;
+
+    font-size: 1.5rem;
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+}
+
+/* LINKS NAVBAR */
+
+.nav-link{
+
+    color: white !important;
+
+    font-weight: 500;
+
+    margin-right: 12px;
+
+    transition: 0.3s ease;
+
+}
+
+/* HOVER LINKS */
+
+.nav-link:hover{
+
+    color: #ffd2ef !important;
+
+    transform: translateY(-1px);
+
+}
+
+/* BOTÓN USER */
+
+.dropdown .btn{
+
+    border-radius: 12px;
+    font-weight: 600;
+
+}
+
+/* BODY MENÚ */
+
+.body-menu{
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: 60px;
+
+    min-height: 100vh;
+
+    background:
+    linear-gradient(
+        135deg,
+        #f5a1d96b 0%,
+        #ffe5f3 100%
+    );
+
+    padding: 20px;
+
+}
+
+/* BODY INVENTARIO */
+
+.body-inv{
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 40px;
+
+    min-height: 100vh;
+
+    background-color: var(--fondo);
+
+    padding: 40px;
+
+}
+
+/* CONTENEDOR GENERAL */
+
+.contenedor{
+
+    background-color: var(--blanco);
+
+    width: 100%;
+    max-width: 420px;
+
+    border-radius: 20px;
+
+    padding: 40px;
+
+    box-shadow:
+        0 10px 30px var(--sombra);
+
+    transition: 0.3s ease;
+
+}
+
+/* HOVER CARD */
+
+.contenedor:hover{
+
+    transform: translateY(-3px);
+
+}
+
+/* HEADER */
+
 .header{
+
     text-align: center;
+
     margin-bottom: 35px;
+
 }
 
 .header h1{
+
     color: var(--rosa-liverpool);
+
     font-size: 42px;
+
     font-weight: 800;
+
     margin-bottom: 8px;
+
 }
 
 .header p{
+
     color: var(--gris-texto);
+
     font-size: 16px;
+
 }
+
+/* TITULOS */
 
 .contenedor h2{
+
     text-align: center;
+
     margin-bottom: 25px;
+
     color: #333;
-    font-size: 18px;
-    font-weight: bold;
+
+    font-size: 20px;
+
+    font-weight: 700;
+
 }
+
+/* BOTONES */
 
 .btn.button{
+
     width: 100%;
+
     padding: 15px;
+
     margin-bottom: 18px;
+
     border: none;
-    border-radius: 12px;
+
+    border-radius: 14px;
+
     background-color: var(--rosa-liverpool);
+
     color: white;
+
     font-size: 16px;
+
     font-weight: 600;
+
     cursor: pointer;
+
     transition: all 0.3s ease;
+
 }
 
+/* HOVER BOTÓN */
+
 .btn.button:hover{
+
     background: var(--rosa-hover);
+
     transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(225, 0, 152, 0.3);
+
+    box-shadow:
+        0 6px 15px rgba(225, 0, 152, 0.3);
+
+}
+
+/* TABLAS */
+
+.table{
+
+    background-color: white;
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 5px 15px rgba(0,0,0,0.05);
+
+}
+
+/* HEADER TABLAS */
+
+.table thead{
+
+    background-color: var(--rosa-liverpool);
+
+    color: white;
+
+}
+
+/* CELDAS */
+
+.table td,
+.table th{
+
+    vertical-align: middle;
+
+    padding: 16px;
+
+}
+
+/* FILAS HOVER */
+
+.table tbody tr:hover{
+
+    background-color: #fff2fa;
+
+}
+
+/* INPUTS */
+
+.form-control,
+.form-select{
+
+    border-radius: 12px;
+
+    padding: 12px;
+
+    border: 1px solid #ddd;
+
+}
+
+/* FOCUS INPUTS */
+
+.form-control:focus,
+.form-select:focus{
+
+    border-color: var(--rosa-liverpool);
+
+    box-shadow:
+        0 0 0 0.2rem rgba(225,1,152,0.15);
+
+}
+
+/* CARDS */
+
+.card{
+
+    border: none;
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 5px 20px rgba(0,0,0,0.06);
+
+}
+
+/* BADGES */
+
+.badge-promo{
+
+    background-color: var(--rosa-liverpool);
+
+    color: white;
+
+    padding: 8px 12px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+}
+
+/* TITULOS PRINCIPALES */
+
+.titulo{
+
+    font-size: 32px;
+
+    font-weight: 800;
+
+    color: var(--rosa-liverpool);
+
+    margin-bottom: 25px;
+
+}
+
+/* RESPONSIVE */
+
+@media(max-width: 768px){
+
+    .body-menu{
+
+        flex-direction: column;
+
+    }
+
+    .contenedor{
+
+        max-width: 100%;
+
+    }
+
+    .navbar-brand{
+
+        font-size: 1.2rem;
+
+    }
+
 }

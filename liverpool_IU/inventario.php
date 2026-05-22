@@ -1,17 +1,10 @@
+<?php include 'components/header.php'; ?>
 
-<!DOCTYPE html>
-<html lang="esp"> 
-<head>
-    <meta charset="UTF-8">
-    <title>Inventario</title>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL79Yl9cLTuSTNVDAiKDtw1" crossorigin="anonymous"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body class="body-inv">
-    <div>
+<?php include 'components/navbar.php'; ?>
+
+    <div class="body-inv">
         <h1>Inventario</h1>
-    </div>
+    
     <div class ="container">
         <table class="table table-striped table-bordered">
             <thead>
@@ -49,12 +42,12 @@
                     foreach ($pdo->query($sql) as $row) {
                         echo '<tr>';
                         echo '<td>'. $row['id_producto'] . '</td>';
-                        echo '<td>'. $row['producto_nombre'] . '</td>';
+                        echo '<td>'. htmlspecialchars($row['producto_nombre']) . '</td>';
                         echo '<td>'. $row['precio'] . '</td>';
                         echo '<td>'. $row['stock_actual'] . '</td>';
                         echo '<td>'. $row['stock_minimo'] . '</td>';
-                        echo '<td>'. $row['categoria_nombre'] . '</td>';
-                        echo '<td>'. $row['marca'] . '</td>';
+                        echo '<td>'. htmlspecialchars($row['categoria_nombre']) . '</td>';
+                        echo '<td>'. htmlspecialchars($row['marca']) . '</td>';
                         echo '<td>'. $row['promos_activas'] . '</td>';
                         echo '</tr>';
                     }
@@ -63,8 +56,5 @@
             </tbody>
         </table>
     </div>
-</body>
-
-
-
-</html>
+    </div>
+<?php include 'components/footer.php'; ?>
