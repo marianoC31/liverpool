@@ -204,8 +204,12 @@ foreach ($relaciones as $r) {
                     <td><?= htmlspecialchars($p['nombre']) ?></td>
                     <td><?= htmlspecialchars($p['tipo']) ?></td>
                     <td><?= $p['porcentaje'] ?>%</td>
-                    <td><?= $p['fecha_inicio'] ?> a <?= $p['fecha_fin'] ?></td>
-                    <td><?= $p['estado'] ?></td>
+                    <td><?= $p['fecha_inicio'] ?> → <?= $p['fecha_fin'] ?></td>
+                    <td>
+                        <span  <?= $p['estado'] === 'activa' ? 'on' : 'off' ?>">
+                            <?= $p['estado'] ?>
+                        </span>
+                    </td>
                     <td>
                         <?php
                         if (isset($prods_por_promo[$p['id_promo']])) {

@@ -42,12 +42,12 @@
                     foreach ($pdo->query($sql) as $row) {
                         echo '<tr>';
                         echo '<td>'. $row['id_producto'] . '</td>';
-                        echo '<td>'. $row['producto_nombre'] . '</td>';
+                        echo '<td>'. htmlspecialchars($row['producto_nombre']) . '</td>';
                         echo '<td>'. $row['precio'] . '</td>';
                         echo '<td>'. $row['stock_actual'] . '</td>';
                         echo '<td>'. $row['stock_minimo'] . '</td>';
-                        echo '<td>'. $row['categoria_nombre'] . '</td>';
-                        echo '<td>'. $row['marca'] . '</td>';
+                        echo '<td>'. htmlspecialchars($row['categoria_nombre']) . '</td>';
+                        echo '<td>'. htmlspecialchars($row['marca']) . '</td>';
                         echo '<td>'. $row['promos_activas'] . '</td>';
                         echo '</tr>';
                     }
