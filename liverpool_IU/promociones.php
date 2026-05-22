@@ -152,7 +152,7 @@ foreach ($relaciones as $r) {
                 <input type="text" name="nombre" required>
             </p>
             <p>Tipo
-                <input type="text" name="tipo" placeholder="DESCUENTO, 2X1..." required>
+                <input type="text" name="tipo" placeholder="DESCUENTO" required>
             </p>
             <p>Porcentaje
                 <input type="number" name="porcentaje" min="1" max="100" required>

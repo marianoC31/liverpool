@@ -153,7 +153,7 @@ foreach ($detalles_raw as $d) {
                 <div class="field">
                     <label>Proveedor</label>
                     <select name="id_proveedor" required>
-                        <option value="">— Selecciona un proveedor —</option>
+                        <option value=""> Selecciona un proveedor </option>
                         <?php foreach ($proveedores as $p): ?>
                             <option value="<?= $p['id_proveedor'] ?>">
                                 <?= htmlspecialchars($p['nombre']) ?>
@@ -172,7 +172,7 @@ foreach ($detalles_raw as $d) {
                 <div class="field" style="flex:2;">
                     <label>Producto</label>
                     <select id="sel-prod">
-                        <option value="">— Elige un producto —</option>
+                        <option value="">Elige un producto</option>
                         <?php foreach ($productos as $p): ?>
                             <option value="<?= $p['id_producto'] ?>"
                                     data-nombre="<?= htmlspecialchars($p['nombre'], ENT_QUOTES) ?>"
