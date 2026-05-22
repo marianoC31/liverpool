@@ -2,7 +2,6 @@
 
     <div class="container-fluid">
 
-        <!-- Logo -->
         <a class="navbar-brand fw-bold" href="index.php">
 
             <i class="bi bi-bag-fill"></i>
@@ -10,7 +9,6 @@
 
         </a>
 
-        <!-- Botón responsive -->
         <button class="navbar-toggler"
                 type="button"
                 data-bs-toggle="collapse"
@@ -20,7 +18,6 @@
 
         </button>
 
-        <!-- Contenido navbar -->
         <div class="collapse navbar-collapse"
              id="navbarContenido">
 

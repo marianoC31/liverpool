@@ -119,39 +119,26 @@ body{
 /* BODY INVENTARIO */
 
 .body-inv{
-
     display: flex;
-
     flex-direction: column;
-
     gap: 40px;
-
     min-height: 100vh;
-
     background-color: var(--fondo);
-
     padding: 40px;
-
 }
 
 /* CONTENEDOR GENERAL */
 
 .contenedor{
-
     background-color: var(--blanco);
-
     width: 100%;
     max-width: 420px;
-
     border-radius: 20px;
-
     padding: 40px;
-
     box-shadow:
         0 10px 30px var(--sombra);
 
     transition: 0.3s ease;
-
 }
 
 /* HOVER CARD */
@@ -321,14 +308,10 @@ body{
 /* CARDS */
 
 .card{
-
     border: none;
-
     border-radius: 20px;
-
     box-shadow:
         0 5px 20px rgba(0,0,0,0.06);
-
 }
 
 /* BADGES */

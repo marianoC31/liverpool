@@ -53,7 +53,7 @@ CREATE TABLE item (
     nombre_comun VARCHAR(100)
 ); 
 
---nivel 1
+--  nivel 1
 CREATE TABLE personal (
   id_personal INT PRIMARY KEY,
   nombre VARCHAR(30),
@@ -80,7 +80,7 @@ CREATE TABLE categoria (
     FOREIGN KEY(id_departamento) REFERENCES departamento (id_departamento)
 );
 
---nivel 2
+--  nivel 2
 
 CREATE TABLE producto (
     id_producto INT PRIMARY KEY,
@@ -128,7 +128,7 @@ CREATE TABLE boletos_disney (
     FOREIGN KEY (id_boletos) REFERENCES item(id_item) ON DELETE CASCADE
 );
 
---nivel 3
+--  nivel 3
 
 CREATE TABLE corte_caja (
     id_corte INT PRIMARY KEY,
@@ -175,7 +175,7 @@ CREATE TABLE platillo (
     FOREIGN KEY (id_categoria_g) REFERENCES categoria_gourmet(id_categoria_g)
 );
 
---nivel 4
+--  nivel 4
 
 CREATE TABLE venta (
     id_venta INT AUTO_INCREMENT PRIMARY KEY,
@@ -200,7 +200,7 @@ CREATE TABLE venta_detalle (
     FOREIGN KEY (id_venta) REFERENCES venta(id_venta),
     FOREIGN KEY (id_item) REFERENCES item(id_item)
 );
---nivel 5
+--  nivel 5
 
 CREATE TABLE venta_detalle_alojamiento (
     id_detalle INT PRIMARY KEY,
@@ -322,7 +322,7 @@ CREATE TABLE paquete_vuelo (
     FOREIGN KEY (id_vuelo) REFERENCES vuelo(id_vuelo)
 );
 
---tarjetas de credito
+--  tarjetas de credito
 
 CREATE TABLE tarjeta (
     id_tarjeta INT PRIMARY KEY AUTO_INCREMENT,

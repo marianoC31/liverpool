@@ -6,7 +6,7 @@
     $pdo = Database::connect();
 
     $cajas_stmt = $pdo->query("SELECT id_caja FROM caja_cobro WHERE estado = 'abierta'");
-    $cajas = $cajas_stmt->fetchALL(PDO::FETCH_ASSOC);
+    $cajas = $cajas_stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $query_productos = "SELECT p.id_producto, p.nombre, p.precio, p.marca, i.stock_actual,
         IFNULL(GROUP_CONCAT(DISTINCT pr.porcentaje SEPARATOR ','), 0) AS descuento_porcentaje,
