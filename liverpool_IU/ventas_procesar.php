@@ -13,7 +13,7 @@ $id_caja = $_POST['id_caja'];
 $id_cliente = $_POST['id_cliente'];
 $id_personal = $_POST['id_personal'];
 $productos_id = $_POST['productos_seleccionados'];
-
+$id_metodo = $_POST['id_metodo'];
 
 $total_venta = 0;
 $detalles_recibo = [];
@@ -40,6 +40,7 @@ try {
     $stmt_update_stock = $pdo ->prepare("UPDATE inventario SET stock_actual=stock_actual-? WHERE id_producto = ?");
     $stmt_ins_promo = $pdo -> prepare ("INSERT INTO venta_promo(id_promo,id_detalle) VALUES (?,?)");
 
+    $stmt_ins_pago = $pdo->prepare("INSERT INTO pago (id_venta,id_metodo,monto) VALUES (?,?,?)");
 
     foreach ($productos_id as $id_prod){
         $cantidad = intval($_POST['cantidad_' . $id_prod]);    
@@ -75,8 +76,8 @@ try {
         $stmt_ins_detalle ->execute([$id_venta,$id_prod, $cantidad, $precio_original, $ahorro_total, $subtotal_item]);
         $id_detalle = $pdo -> lastInsertId();
         $stmt_update_stock ->execute([$cantidad,$id_prod]);
-
-        if(!empty($info['id_promo'])){
+        
+        if(!empty($info['ids_promo'])){
            $arr_ids_promos = explode(',', $info['ids_promos']);
             foreach ($arr_ids_promos as $id_promo_individual) {
                 $stmt_ins_promo->execute([$id_promo_individual, $id_detalle]);
@@ -94,6 +95,7 @@ try {
         ];
     }
 
+    $stmt_ins_pago ->execute([$id_venta,$id_metodo,$total_venta]);
     $stmt_venta = $pdo->prepare("UPDATE venta SET total = ? WHERE id_venta = ?");
     $stmt_venta->execute([$total_venta,$id_venta]);
 
@@ -105,9 +107,6 @@ try {
 }
 ?>
 
-<head>
-    <title>Recibo de Compra</title>
-</head>
 <body>
     <div class="container no-print text-center mt-3">
         <button onclick="window.print();" class="btn btn-warning fw-bold px-4">Imprimir Ticket</button>
@@ -128,6 +127,7 @@ try {
         <p class="my-1"><strong>FECHA:</strong> <?= date('d-m-Y H:i:s') ?></p>
         <p class="my-1"><strong>CAJA:</strong> 00<?= htmlspecialchars($id_caja) ?> &nbsp;&nbsp;&nbsp; <strong>CAJERO:</strong> #<?= htmlspecialchars($id_personal) ?></p>
         <p class="my-1"><strong>CLIENTE:</strong> #<?= htmlspecialchars($id_cliente) ?></p>
+        
         
         <hr style="border-top: 1px dashed #000;">
         
@@ -177,3 +177,5 @@ try {
         </div>
     </div>
 </body>
+
+<?php include 'components/footer.php'; ?>

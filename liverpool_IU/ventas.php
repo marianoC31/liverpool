@@ -14,6 +14,9 @@
     $personal_stmt = $pdo->query("SELECT id_personal, nombre FROM personal");
     $personal = $personal_stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    $metodos_stmt = $pdo->query("SELECT id_metodo, tipo FROM metodo_pago");
+    $metodos = $metodos_stmt->fetchAll(PDO::FETCH_ASSOC);
+
     $query_productos = "SELECT p.id_producto, p.nombre, p.precio, p.marca, i.stock_actual, c.nombre AS cat,
         MAX(pr.porcentaje) AS descuento_porcentaje,
         GROUP_CONCAT(DISTINCT pr.tipo) AS tipos_promos,
@@ -34,10 +37,7 @@
     $productos_selec = [];
 ?>
 
-<!DOCTYPE html>
-<head>
-    <title>Liverpool - Caja</title>
-</head>
+
     <body>
         <div class="container mt-5">
         <div class="card shadow-sm">
@@ -144,13 +144,23 @@
                             <span style="color:#555;">Total de la compra:</span>
                             <strong id="total-lbl" style="font-size:1.2rem; color:var(--rosa-liverpool);">$0.00</strong>
                         </div>
-            
-                        <!-- Campos hidden enviados al servidor -->
-                        <div id="hidden-fields"></div>
-            
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                        <button type="submit" class="btn btn-secondary btn-lgpx-5">Procesar Venta y Generar Recibo</button>
-                    </div>
+                        <div class="row mb-4">
+                            <div class="col-md-4 d-grid gap-2 d-md-flex justify-content-md-start mt-4">
+                                <label class="form-label fw-bold">Seleccionar metodo de pago:</label>
+                                <select name="id_metodo" id="sel-met" class="form-select" required>
+                                    <option value="">Metodo de Pago</option>
+                                    <?php foreach ($metodos as $m): ?>
+                                        <option value="<?= $m['id_metodo'] ?>"><?= $m['tipo'] ?></option>
+                                    <?php endforeach; ?>
+                                </select>         
+                            </div>
+                            <!-- Campos hidden enviados al servidor -->
+                            <div id="hidden-fields"></div>
+                
+                            <div class=" d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                <button type="submit" class="btn btn-secondary btn-lgpx-5">Procesar Venta y Generar Recibo</button>
+                            </div>
+                        </div>
                     </form>
             </div>
         </div>
@@ -238,7 +248,7 @@
                     <td>${l.cat}</td>
                     <td>${l.precio}</td>
                     <td>
-                    ${l.promo.includes("Sin promo") ? `<span class="text-muted"> Sin descuento </span>` : `<span class="badge bg-success"> ${l.promo.join(",")} (-${l.descuento}%)</span>`}
+                    ${l.promo.includes("Sin promo") ? `<span class="text-muted"> Sin descuento </span>` : `<span class="badge bg-success"> ${l.promo.join(",")} ${l.descuento!=0 ? `(-${l.descuento}%)`:""}</span>`}
                     </td>
                     <td>${l.stock} pzs</td>
                     <td>
