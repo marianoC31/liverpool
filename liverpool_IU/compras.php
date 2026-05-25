@@ -1,37 +1,34 @@
 <?php
 require_once 'Db.php';
- 
+
 $pdo = Database::connect();
-$mensaje = '';
+$mensaje  = '';
 $tipo_msg = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $accion = $_POST['accion'] ?? '';
- 
+
     try {
         $pdo->beginTransaction();
- 
+
         if ($accion === 'registrar') {
- 
+
             $id_proveedor  = (int)($_POST['id_proveedor'] ?? 0);
             $fecha         = $_POST['fecha'] ?? '';
             $productos_ids = $_POST['productos_ids'] ?? [];
             $cantidades    = $_POST['cantidades']    ?? [];
             $costos        = $_POST['costos']        ?? [];
- 
-            // Validaciones
-            if ($id_proveedor <= 0)
-                throw new Exception("Selecciona un proveedor válido.");
-            if (empty($fecha))
-                throw new Exception("Indica la fecha de recepción.");
-            if (empty($productos_ids))
-                throw new Exception("Agrega al menos un producto a la compra.");
+
+            if ($id_proveedor <= 0)   throw new Exception("Selecciona un proveedor válido.");
+            if (empty($fecha))        throw new Exception("Indica la fecha de recepción.");
+            if (empty($productos_ids)) throw new Exception("Agrega al menos un producto.");
+
             // Calcular costo total
             $costo_total = 0;
             for ($i = 0; $i < count($productos_ids); $i++) {
                 $costo_total += (float)$costos[$i] * (int)$cantidades[$i];
             }
- 
+
             // 1. Insertar compra
             $stmt = $pdo->prepare("
                 INSERT INTO compra (id_proveedor, fecha, costo_compra, estado)
@@ -39,80 +36,82 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ");
             $stmt->execute([$id_proveedor, $fecha, $costo_total]);
             $id_compra = $pdo->lastInsertId();
- 
-            // 2. Insertar detalle + actualizar inventario
+
+            // 2. Insertar detalle y actualizar inventario por cada producto
             $stmt_det = $pdo->prepare("
                 INSERT INTO compra_detalle (id_producto, id_compra, cantidad, costo_unitario)
                 VALUES (?, ?, ?, ?)
             ");
-             $stmt_inv = $pdo->prepare("
+            $stmt_inv = $pdo->prepare("
                 UPDATE inventario
                 SET stock_actual = stock_actual + ?,
                     ultima_actualizacion = CURRENT_TIMESTAMP
                 WHERE id_producto = ?
             ");
- 
+
             for ($i = 0; $i < count($productos_ids); $i++) {
                 $id_prod  = (int)$productos_ids[$i];
                 $cantidad = (int)$cantidades[$i];
                 $costo    = (float)$costos[$i];
- 
+
                 if ($id_prod <= 0 || $cantidad <= 0 || $costo <= 0)
                     throw new Exception("Datos inválidos en la línea " . ($i + 1) . ".");
- 
+
                 $stmt_det->execute([$id_prod, $id_compra, $cantidad, $costo]);
                 $stmt_inv->execute([$cantidad, $id_prod]);
             }
- 
+
             $mensaje  = "Compra #$id_compra registrada correctamente. Inventario actualizado.";
             $tipo_msg = 'ok';
- 
+
         } elseif ($accion === 'cambiar_estado') {
+
             $id_compra    = (int)$_POST['id_compra'];
             $nuevo_estado = $_POST['nuevo_estado'] ?? '';
- 
+
             if (!in_array($nuevo_estado, ['PENDIENTE', 'RECIBIDO']))
                 throw new Exception("Estado inválido.");
- 
+
             $pdo->prepare("UPDATE compra SET estado = ? WHERE id_compra = ?")
                 ->execute([$nuevo_estado, $id_compra]);
- 
-            $mensaje  = "Estado de la compra #$id_compra actualizado a $nuevo_estado.";
+
+            $mensaje  = "Estado de compra #$id_compra actualizado a $nuevo_estado.";
             $tipo_msg = 'ok';
         }
- 
+
         $pdo->commit();
- 
+
     } catch (Exception $e) {
         if ($pdo->inTransaction()) $pdo->rollBack();
         $mensaje  = "Error: " . $e->getMessage();
         $tipo_msg = 'error';
     }
 }
- $proveedores = $pdo->query("
+
+$proveedores = $pdo->query("
     SELECT id_proveedor, nombre FROM proveedor ORDER BY nombre
 ")->fetchAll();
- 
+
 $productos = $pdo->query("
     SELECT p.id_producto, p.nombre, p.marca, c.nombre AS cat, i.stock_actual
     FROM producto p
-    INNER JOIN categoria c  ON p.id_categoria  = c.id_categoria
-    INNER JOIN inventario i ON i.id_producto   = p.id_producto
+    INNER JOIN categoria c  ON p.id_categoria = c.id_categoria
+    INNER JOIN inventario i ON i.id_producto  = p.id_producto
     ORDER BY c.nombre, p.nombre
 ")->fetchAll();
- 
+
 $historial = $pdo->query("
     SELECT c.id_compra, pr.nombre AS proveedor, c.fecha,
            c.costo_compra, c.estado,
-           COUNT(cd.id_compra_detalle)      AS num_lineas,
-           COALESCE(SUM(cd.cantidad), 0)    AS total_unidades
+           COUNT(cd.id_compra_detalle)   AS num_lineas,
+           COALESCE(SUM(cd.cantidad), 0) AS total_unidades
     FROM compra c
     INNER JOIN proveedor pr      ON c.id_proveedor = pr.id_proveedor
     LEFT  JOIN compra_detalle cd ON cd.id_compra   = c.id_compra
     GROUP BY c.id_compra
     ORDER BY c.id_compra DESC
 ")->fetchAll();
- 
+
 $detalles_raw = $pdo->query("
     SELECT cd.id_compra, p.nombre AS producto, p.marca,
            cd.cantidad, cd.costo_unitario,
@@ -121,38 +120,41 @@ $detalles_raw = $pdo->query("
     INNER JOIN producto p ON cd.id_producto = p.id_producto
     ORDER BY cd.id_compra DESC, p.nombre
 ")->fetchAll();
- 
+
 $detalles = [];
 foreach ($detalles_raw as $d) {
     $detalles[$d['id_compra']][] = $d;
 }
-
 ?>
-
 <?php include 'components/header.php'; ?>
-
 <?php include 'components/navbar.php'; ?>
 
-    <div class="body-inv">
+<div class="body-inv">
     <div class="container mt-5">
         <div class="card shadow-sm">
             <div class="card-header pink-header">
                 <h1>Registrar nueva compra</h1>
             </div>
- 
+
     <main class="container wide">
- 
+
         <?php if ($mensaje): ?>
             <div class="alert <?= $tipo_msg ?>"><?= htmlspecialchars($mensaje) ?></div>
         <?php endif; ?>
- 
+
         <form method="POST" class="card" onsubmit="return validarForm()">
             <input type="hidden" name="accion" value="registrar">
- 
+
             <div class="row">
+
+                <!-- Proveedor -->
+                <!-- NOTA: el select NO tiene name porque cuando está disabled
+                     el navegador no lo envía. El hidden sí se envía siempre. -->
                 <div class="field">
                     <label>Proveedor</label>
-                    <select name="id_proveedor" required>
+                    <input type="hidden" name="id_proveedor" id="hid-proveedor" value="">
+                    <select id="sel-proveedor"
+                            onchange="sincronizarProveedor(this.value)">
                         <option value="">— Selecciona un proveedor —</option>
                         <?php foreach ($proveedores as $p): ?>
                             <option value="<?= $p['id_proveedor'] ?>">
@@ -161,12 +163,19 @@ foreach ($detalles_raw as $d) {
                         <?php endforeach; ?>
                     </select>
                 </div>
+
+                <!-- Fecha -->
+                <!-- NOTA: tampoco tiene required porque cuando está disabled
+                     el required bloquea el submit aunque el valor esté bien -->
                 <div class="field">
                     <label>Fecha de recepción</label>
-                    <input type="date" name="fecha" value="<?= date('Y-m-d') ?>" required>
+                    <input type="hidden" name="fecha" id="hid-fecha" value="<?= date('Y-m-d') ?>">
+                    <input type="date" id="inp-fecha" value="<?= date('Y-m-d') ?>"
+                           onchange="document.getElementById('hid-fecha').value = this.value">
                 </div>
+
             </div>
- 
+
             <!-- Agregar producto -->
             <div class="row" style="align-items:flex-end; margin-top:16px;">
                 <div class="field" style="flex:2;">
@@ -197,8 +206,8 @@ foreach ($detalles_raw as $d) {
                     <button type="button" class="btn btn-primary" onclick="agregarLinea()">+ Agregar</button>
                 </div>
             </div>
- 
-            <!-- Tabla -->
+
+            <!-- Tabla de productos -->
             <table class="data-table" id="tabla-lineas" style="margin-top:16px;">
                 <thead>
                     <tr>
@@ -221,7 +230,7 @@ foreach ($detalles_raw as $d) {
                     </tr>
                 </tbody>
             </table>
- 
+
             <!-- Total -->
             <div style="display:flex; justify-content:flex-end; align-items:center;
                         gap:12px; margin-top:14px; padding:12px 16px;
@@ -229,20 +238,21 @@ foreach ($detalles_raw as $d) {
                 <span style="color:#555;">Total de la compra:</span>
                 <strong id="total-lbl" style="font-size:1.2rem; color:var(--rosa-liverpool);">$0.00</strong>
             </div>
- 
-            <!-- Campos hidden enviados al servidor -->
+
+            <!-- Campos hidden que se envían con los productos -->
             <div id="hidden-fields"></div>
- 
+
             <div class="actions">
                 <button type="submit" class="btn btn-primary">Registrar compra</button>
             </div>
             <hr>
         </form>
- 
-        <!-- HISTORIAL-->
+
+        <!-- HISTORIAL -->
         <h2>Historial de compras</h2>
-        <table class="data-table">
-            <thead>
+         <div class="table-responsive">
+        <table class="data-table table table-hover align-middle" id="tabla-lineas" style="margin-top:16px;">
+            <thead class="table-light">
                 <tr>
                     <th>#</th>
                     <th>Proveedor</th>
@@ -264,17 +274,14 @@ foreach ($detalles_raw as $d) {
                     <td><?= $h['total_unidades'] ?></td>
                     <td>$<?= number_format($h['costo_compra'], 2) ?></td>
                     <td>
-                        <span class="  <?= $h['estado'] === 'RECIBIDO' ? 'on' : 'off' ?>">
+                        <span class="mb-3 fw-bold text-secondary <?= $h['estado'] === 'RECIBIDO' ? 'on' : 'off' ?>">
                             <?= $h['estado'] ?>
                         </span>
                     </td>
                     <td class="acciones-celda">
-                        <!-- Ver detalle -->
-                        <button class="btn-secondary"
-                                onclick="toggleDet(<?= $h['id_compra'] ?>)">
+                        <button class="btn btn-info" onclick="toggleDet(<?= $h['id_compra'] ?>)">
                             Ver detalle
                         </button>
-                        <!-- Cambiar estado -->
                         <?php $otro = $h['estado'] === 'RECIBIDO' ? 'PENDIENTE' : 'RECIBIDO'; ?>
                         <form method="POST" style="display:inline;">
                             <input type="hidden" name="accion"       value="cambiar_estado">
@@ -284,7 +291,6 @@ foreach ($detalles_raw as $d) {
                         </form>
                     </td>
                 </tr>
-                <!-- Fila de detalle colapsable -->
                 <tr id="det-<?= $h['id_compra'] ?>" style="display:none;">
                     <td colspan="8" style="background:#fdf3fb; padding:10px 24px;">
                         <?php $dets = $detalles[$h['id_compra']] ?? []; ?>
@@ -294,11 +300,8 @@ foreach ($detalles_raw as $d) {
                             <table class="data-table">
                                 <thead>
                                     <tr>
-                                        <th>Producto</th>
-                                        <th>Marca</th>
-                                        <th>Cantidad</th>
-                                        <th>Costo unit.</th>
-                                        <th>Subtotal</th>
+                                        <th>Producto</th><th>Marca</th>
+                                        <th>Cantidad</th><th>Costo unit.</th><th>Subtotal</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -319,25 +322,41 @@ foreach ($detalles_raw as $d) {
             <?php endforeach; ?>
             </tbody>
         </table>
- 
+        </div>                                  
+
     </main>
     </div>
     </div>
 </div>
- <script>
-// ── Carrito de compra ─────────────────────────────────────────
+
+<script>
 let lineas = [];
- 
+
+// Sincroniza el select visible con el hidden que sí se envía en el POST
+function sincronizarProveedor(val) {
+    document.getElementById('hid-proveedor').value = val;
+}
+
+// Bloquea proveedor y fecha cuando hay productos, los desbloquea cuando no hay
+function bloquearProveedor(bloquear) {
+    document.getElementById('sel-proveedor').disabled = bloquear;
+    document.getElementById('inp-fecha').disabled     = bloquear;
+}
+
 function agregarLinea() {
     const sel   = document.getElementById('sel-prod');
     const opt   = sel.selectedOptions[0];
     const cant  = parseInt(document.getElementById('inp-cant').value);
     const costo = parseFloat(document.getElementById('inp-costo').value);
- 
-    if (!sel.value)            { alert('Selecciona un producto.');               return; }
-    if (!cant  || cant  <= 0)  { alert('La cantidad debe ser mayor a 0.');       return; }
-    if (!costo || costo <= 0)  { alert('El costo unitario debe ser mayor a 0.'); return; }
- 
+
+    if (!document.getElementById('hid-proveedor').value) {
+        alert('Primero selecciona un proveedor.');
+        return;
+    }
+    if (!sel.value)           { alert('Selecciona un producto.');               return; }
+    if (!cant  || cant  <= 0) { alert('La cantidad debe ser mayor a 0.');       return; }
+    if (!costo || costo <= 0) { alert('El costo unitario debe ser mayor a 0.'); return; }
+
     const existe = lineas.find(l => l.id === sel.value);
     if (existe) {
         existe.cantidad += cant;
@@ -353,44 +372,47 @@ function agregarLinea() {
             costo:    costo
         });
     }
- 
+
     sel.value = '';
     document.getElementById('inp-cant').value  = 1;
     document.getElementById('inp-costo').value = '';
     renderTabla();
 }
- 
+
 function eliminar(idx) {
     lineas.splice(idx, 1);
     renderTabla();
 }
- 
+
 function actualizarCant(idx, val) {
     const v = parseInt(val);
     if (v > 0) { lineas[idx].cantidad = v; renderTabla(); }
 }
- 
+
 function renderTabla() {
     const tbody  = document.getElementById('tbody-lineas');
     const hidden = document.getElementById('hidden-fields');
- 
+
     tbody.innerHTML  = '';
     hidden.innerHTML = '';
- 
+
     if (lineas.length === 0) {
         tbody.innerHTML = `<tr id="fila-vacia">
             <td colspan="9" class="muted" style="padding:18px;">
                 Aún no hay productos. Usa el selector de arriba.
             </td></tr>`;
         document.getElementById('total-lbl').textContent = '$0.00';
+        bloquearProveedor(false);   // sin productos → proveedor editable
         return;
     }
- 
+
+    bloquearProveedor(true);        // con productos → proveedor bloqueado
+
     let total = 0;
     lineas.forEach((l, i) => {
         const sub = l.cantidad * l.costo;
         total += sub;
- 
+
         tbody.innerHTML += `<tr>
             <td>${i + 1}</td>
             <td>${l.nombre}</td>
@@ -408,29 +430,33 @@ function renderTabla() {
                 <button type="button" class="btn-danger" onclick="eliminar(${i})">✕</button>
             </td>
         </tr>`;
- 
+
         hidden.innerHTML += `
             <input type="hidden" name="productos_ids[]" value="${l.id}">
             <input type="hidden" name="cantidades[]"    value="${l.cantidad}">
             <input type="hidden" name="costos[]"        value="${l.costo}">`;
     });
- 
+
     document.getElementById('total-lbl').textContent =
         '$' + total.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
- 
+
 function validarForm() {
+    if (!document.getElementById('hid-proveedor').value) {
+        alert('Selecciona un proveedor antes de registrar la compra.');
+        return false;
+    }
     if (lineas.length === 0) {
         alert('Agrega al menos un producto antes de registrar la compra.');
         return false;
     }
     return true;
 }
- 
-// ── Acordeón historial ────────────────────────────────────────
+
 function toggleDet(id) {
     const f = document.getElementById('det-' + id);
     f.style.display = f.style.display === 'none' ? 'table-row' : 'none';
 }
 </script>
+
 <?php include 'components/footer.php'; ?>
