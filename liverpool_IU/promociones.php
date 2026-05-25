@@ -15,9 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $pdo->beginTransaction();
 
-        // =====================================================
-        // CREAR PROMOCIÓN
-        // =====================================================
         if ($accion === 'crear') {
 
             $id_promo     = (int)($_POST['id_promo'] ?? 0);
@@ -61,9 +58,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (empty($productos))
                 throw new Exception("Selecciona al menos un producto.");
 
-            // =====================================================
-            // INSERTAR PROMOCIÓN
-            // =====================================================
 
             $stmt = $pdo->prepare("
                 INSERT INTO promocion
@@ -91,10 +85,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $tipo
             ]);
 
-            // =====================================================
-            // ASOCIAR PRODUCTOS
-            // =====================================================
-
             $stmtProd = $pdo->prepare("
                 INSERT INTO producto_promo
                 (
@@ -119,9 +109,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $tipo_msg = 'ok';
         }
 
-        // =====================================================
-        // ACTIVAR / DESACTIVAR
-        // =====================================================
         elseif ($accion === 'toggle') {
 
             $id_promo = (int)($_POST['id_promo'] ?? 0);
@@ -143,9 +130,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $tipo_msg = 'ok';
         }
 
-        // =====================================================
-        // ELIMINAR
-        // =====================================================
         elseif ($accion === 'eliminar') {
 
             $id_promo = (int)($_POST['id_promo'] ?? 0);
@@ -184,9 +168,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// =====================================================
-// DATOS PARA MOSTRAR
-// =====================================================
 
 $max_id = $pdo->query("
     SELECT COALESCE(MAX(id_promo), 0) + 1
@@ -252,9 +233,6 @@ foreach ($relaciones as $r) {
                     </div>
                 <?php endif; ?>
 
-                <!-- ================================================= -->
-                <!-- CREAR PROMOCIÓN -->
-                <!-- ================================================= -->
 
                 <h2>Nueva promoción</h2>
 
@@ -357,10 +335,6 @@ foreach ($relaciones as $r) {
 
                     </div>
 
-                    <!-- ================================================= -->
-                    <!-- PRODUCTOS -->
-                    <!-- ================================================= -->
-
                     <div class="field">
 
                         <label>Productos asociados</label>
@@ -399,15 +373,12 @@ foreach ($relaciones as $r) {
 
                 <hr>
 
-                <!-- ================================================= -->
-                <!-- TABLA -->
-                <!-- ================================================= -->
 
                 <h2>Promociones registradas</h2>
 
-                <table class="data-table">
-
-                    <thead>
+                <div class="table-responsive">
+                    <table class="data-table table table-hover align-middle" id="tabla-lineas" style="margin-top:16px;">
+                        <thead class="table-light">
 
                         <tr>
 
@@ -440,19 +411,19 @@ foreach ($relaciones as $r) {
 
                                 <?php if ($p['tipo'] === 'PORCENTAJE'): ?>
 
-                                    <span class="badge off">
+                                    <span class="mb-3 fw-bold text-secondary off">
                                         %
                                     </span>
 
                                 <?php elseif ($p['tipo'] === '2X1'): ?>
 
-                                    <span class="badge on">
+                                    <span class="mb-3 fw-bold text-secondary on">
                                         2x1
                                     </span>
 
                                 <?php elseif ($p['tipo'] === '3X2'): ?>
 
-                                    <span class="badge on">
+                                    <span class="mb-3 fw-bold text-secondary on">
                                         3x2
                                     </span>
 
@@ -490,7 +461,7 @@ foreach ($relaciones as $r) {
 
                             <td>
 
-                                <span class="badge <?= $p['estado'] === 'activa' ? 'on' : 'off' ?>">
+                                <span class="mb-3 fw-bold text-secondary <?= $p['estado'] === 'activa' ? 'on' : 'off' ?>">
 
                                     <?= $p['estado'] ?>
 
@@ -589,6 +560,7 @@ foreach ($relaciones as $r) {
                     </tbody>
 
                 </table>
+                </div>
 
             </div>
 
@@ -608,9 +580,6 @@ function cambiarTipoPromo() {
 
     const input = document.getElementById('inp-porcentaje');
 
-    // =========================================
-    // PROMOCIÓN %
-    // =========================================
 
     if (tipo === 'PORCENTAJE') {
 
@@ -618,10 +587,6 @@ function cambiarTipoPromo() {
 
         input.required = true;
     }
-
-    // =========================================
-    // 2X1 O 3X2
-    // =========================================
 
     else {
 

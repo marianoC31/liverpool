@@ -250,7 +250,7 @@ foreach ($detalles_raw as $d) {
 
         <!-- HISTORIAL -->
         <h2>Historial de compras</h2>
-         <div class="table-responsive">
+        <div class="table-responsive">
         <table class="data-table table table-hover align-middle" id="tabla-lineas" style="margin-top:16px;">
             <thead class="table-light">
                 <tr>
