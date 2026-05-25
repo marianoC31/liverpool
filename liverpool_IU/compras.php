@@ -134,7 +134,11 @@ foreach ($detalles_raw as $d) {
 <?php include 'components/navbar.php'; ?>
 
     <div class="body-inv">
-    <h1>Compras</h1>
+    <div class="container mt-5">
+        <div class="card shadow-sm">
+            <div class="card-header pink-header">
+                <h1>Registrar nueva compra</h1>
+            </div>
  
     <main class="container wide">
  
@@ -142,10 +146,6 @@ foreach ($detalles_raw as $d) {
             <div class="alert <?= $tipo_msg ?>"><?= htmlspecialchars($mensaje) ?></div>
         <?php endif; ?>
  
-        <!-- ================================================
-             NUEVA COMPRA
-        ================================================= -->
-        <h2>Registrar nueva compra</h2>
         <form method="POST" class="card" onsubmit="return validarForm()">
             <input type="hidden" name="accion" value="registrar">
  
@@ -194,11 +194,11 @@ foreach ($detalles_raw as $d) {
                     <input type="number" id="inp-costo" min="0.01" step="0.01" placeholder="0.00">
                 </div>
                 <div class="field" style="justify-content:flex-end;">
-                    <button type="button" class="btn-primary" onclick="agregarLinea()">+ Agregar</button>
+                    <button type="button" class="btn btn-primary" onclick="agregarLinea()">+ Agregar</button>
                 </div>
             </div>
  
-            <!-- Tabla de líneas -->
+            <!-- Tabla -->
             <table class="data-table" id="tabla-lineas" style="margin-top:16px;">
                 <thead>
                     <tr>
@@ -234,13 +234,12 @@ foreach ($detalles_raw as $d) {
             <div id="hidden-fields"></div>
  
             <div class="actions">
-                <button type="submit" class="btn-primary">✅ Registrar compra</button>
+                <button type="submit" class="btn btn-primary">Registrar compra</button>
             </div>
+            <hr>
         </form>
  
-        <!-- ================================================
-             HISTORIAL
-        ================================================= -->
+        <!-- HISTORIAL-->
         <h2>Historial de compras</h2>
         <table class="data-table">
             <thead>
@@ -265,7 +264,7 @@ foreach ($detalles_raw as $d) {
                     <td><?= $h['total_unidades'] ?></td>
                     <td>$<?= number_format($h['costo_compra'], 2) ?></td>
                     <td>
-                        <span class="badge <?= $h['estado'] === 'RECIBIDO' ? 'on' : 'off' ?>">
+                        <span class="  <?= $h['estado'] === 'RECIBIDO' ? 'on' : 'off' ?>">
                             <?= $h['estado'] ?>
                         </span>
                     </td>
@@ -322,6 +321,8 @@ foreach ($detalles_raw as $d) {
         </table>
  
     </main>
+    </div>
+    </div>
 </div>
  <script>
 // ── Carrito de compra ─────────────────────────────────────────
