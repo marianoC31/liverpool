@@ -15,7 +15,7 @@
 		   // One connection through whole application
 	    	if ( null == self::$cont ) {
 		    	try {
-		        	self::$cont =  new PDO( "mysql:host=".self::$dbHost.";"."dbname=".self::$dbName, self::$dbUsername, self::$dbUserPassword);
+		        	self::$cont =  new PDO( "mysql:host=".self::$dbHost.";"."dbname=".self::$dbName.";charset=utf8mb4", self::$dbUsername, self::$dbUserPassword);
 		        }
 		        catch(PDOException $e) {
 		        	die($e->getMessage());

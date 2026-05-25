@@ -15,7 +15,8 @@
     $personal = $personal_stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $query_productos = "SELECT p.id_producto, p.nombre, p.precio, p.marca, i.stock_actual, c.nombre AS cat,
-        IFNULL(GROUP_CONCAT(DISTINCT pr.porcentaje SEPARATOR ','), 0) AS descuento_porcentaje,
+        MAX(pr.porcentaje) AS descuento_porcentaje,
+        GROUP_CONCAT(DISTINCT pr.tipo) AS tipos_promos,
         IFNULL(GROUP_CONCAT(DISTINCT pr.nombre SEPARATOR ','), 'Sin promo') AS promos_activas
         FROM producto p
         INNER JOIN inventario i ON p.id_producto = i.id_producto
@@ -48,7 +49,7 @@
                     <div class="row mb-4">
                         <div class="col-md-4">
                             <label class="form-label fw-bold">Seleccionar Caja de Cobro:</label>
-                            <select name="id_caja" class="form-select" required>
+                            <select name="id_caja" id="sel-caja" class="form-select" required>
                                 <option value="">Cajas</option>
                                 <?php foreach ($cajas as $caja): ?>
                                     <option value="<?= $caja['id_caja'] ?>">Caja #<?= $caja['id_caja'] ?></option>
@@ -57,16 +58,16 @@
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-bold">ID Cliente (Frecuente):</label>
-                            <select name="id_cliente" class="form-select" required>
+                            <select name="id_cliente" id="sel-cliente" class="form-select" required>
                                 <option value="">Seleccionar Cliente</option>
                                 <?php foreach ($clientes as $cliente): ?>
-                                    <option value="<?= $cliente['id_cliente'] ?>"><?= htmlspecialchars($cliente['nombre']) ?></option>
+                                    <option value="<?= $cliente['id_cliente'] ?>"><?=  $cliente['id_cliente'] . " " . htmlspecialchars($cliente['nombre']) ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-bold">ID Personal (Cajero):</label>
-                            <select name="id_personal" class="form-select" required>
+                            <select name="id_personal"id="sel-personal" class="form-select" required>
                                 <option value="">Seleccionar Trabajador</option>
                                 <?php foreach ($personal as $p): ?>
                                     <option value="<?= $p['id_personal'] ?>"><?= $p['id_personal'] . " " . htmlspecialchars($p['nombre']) ?></option>
@@ -89,11 +90,12 @@
                                                 data-marca="<?=  htmlspecialchars($p['marca'],  ENT_QUOTES) ?>"
                                                 data-cat="<?=    htmlspecialchars($p['cat'],    ENT_QUOTES) ?>"
                                                 data-promos="<?=  htmlspecialchars($p['promos_activas'],  ENT_QUOTES) ?>"
+                                                data-tipopromo="<?=  htmlspecialchars($p['tipos_promos'],  ENT_QUOTES) ?>"
                                                 data-precio = "<?= $p['precio'] ?>"
                                                 data-descuento = "<?=  $p['descuento_porcentaje'] ?>"
                                                 data-stock="<?= $p['stock_actual'] ?>">
                                             [<?= htmlspecialchars($p['cat']) ?>]
-                                            <?= htmlspecialchars($p['nombre']) ?> — <?= htmlspecialchars($p['marca']) ?>  <? htmlspecialchars($p['precio'])?>
+                                            <?= htmlspecialchars($p['nombre']) ?> — <?= htmlspecialchars($p['marca']) ?>  <?=htmlspecialchars($p['precio'])?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -176,7 +178,8 @@
                     cat: opt.dataset.cat,
                     precio:      opt.dataset.precio,
                     descuento: opt.dataset.descuento,
-                    promo: opt.dataset.promos,
+                    promo: opt.dataset.promos.split(","),
+                    tipopromo: opt.dataset.tipopromo.split(","),
                     stock:    parseInt(opt.dataset.stock),
                     cantidad: cant,
                 });
@@ -214,8 +217,18 @@
             }
         
             let total = 0;
+            
             lineas.forEach((l, i) => {
-                const sub = (l.precio*(1-(l.descuento/100)))*l.cantidad;
+            let prod_efectivos = l.cantidad;
+                l.tipopromo.forEach(p => {
+                    if(p!='DESCUENTO'){
+                        if(p==='2X1'){
+                            prod_efectivos = Math.floor(l.cantidad/2)+(l.cantidad%2);
+                        } 
+                    }
+                })
+                
+                const sub = (l.precio*(1-(l.descuento/100)))*prod_efectivos;
                 total += sub;
         
                 tbody.innerHTML += `<tr>
@@ -225,8 +238,7 @@
                     <td>${l.cat}</td>
                     <td>${l.precio}</td>
                     <td>
-                    ${l.descuento > 0 ? `<span class="badge bg-success"> ${l.promo} (-${l.descuento}%)</span>`: `<span class="text-muted"> Sin descuento</span>`}
-                    </td>
+                    ${l.promo.includes("Sin promo") ? `<span class="text-muted"> Sin descuento </span>` : `<span class="badge bg-success"> ${l.promo.join(",")} (-${l.descuento}%)</span>`}
                     </td>
                     <td>${l.stock} pzs</td>
                     <td>
@@ -259,6 +271,29 @@
             }
             return true;
         }
+        new TomSelect("#sel-caja", {
+            create: false,
+            sortField: {
+                field: "text",
+                direction: "asc"
+            }
+        });
+
+        new TomSelect("#sel-cliente", {
+            create: false,
+            searchField: ["text"]
+        });
+
+        new TomSelect("#sel-personal", {
+            create: false,
+            searchField: ["text"]
+        });
+
+        new TomSelect("#sel-prod", {
+            create: false,
+            searchField: ["text"],
+            maxOptions: 100
+        });
     </script>
     
 
