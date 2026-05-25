@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $fecha_fin    = $_POST['fecha_fin'] ?? '';
             $productos    = $_POST['productos'] ?? [];
 
-            // ================= VALIDACIONES =================
+          
 
             if ($id_promo <= 0)
                 throw new Exception("ID inválido.");
@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($nombre === '')
                 throw new Exception("El nombre es obligatorio.");
 
-            if (!in_array($tipo, ['PORCENTAJE', '2X1', '3X2']))
+            if (!in_array($tipo, ['PORCENTAJE', '2X1']))
                 throw new Exception("Tipo de promoción inválido.");
 
             if ($fecha_inicio === '' || $fecha_fin === '')
@@ -50,13 +50,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             } else {
 
-                // 2X1 o 3X2 no usan porcentaje
+                // 2X1  no usan porcentaje
                 $porcentaje = 0;
             }
 
-            // Debe tener productos
+            //no es necesario
+            /*
             if (empty($productos))
-                throw new Exception("Selecciona al menos un producto.");
+                throw new Exception("Selecciona al menos un producto.");*/
 
 
             $stmt = $pdo->prepare("
@@ -285,10 +286,6 @@ foreach ($relaciones as $r) {
                                 <option value="2X1">
                                     2x1
                                 </option>
-
-                                <option value="3X2">
-                                    3x2
-                                </option>
                             </select>
                         </div>
 
@@ -421,12 +418,6 @@ foreach ($relaciones as $r) {
                                         2x1
                                     </span>
 
-                                <?php elseif ($p['tipo'] === '3X2'): ?>
-
-                                    <span class="mb-3 fw-bold text-secondary on">
-                                        3x2
-                                    </span>
-
                                 <?php endif; ?>
 
                             </td>
@@ -440,10 +431,6 @@ foreach ($relaciones as $r) {
                                 <?php elseif ($p['tipo'] === '2X1'): ?>
 
                                     Lleva 2 paga 1
-
-                                <?php elseif ($p['tipo'] === '3X2'): ?>
-
-                                    Lleva 3 paga 2
 
                                 <?php endif; ?>
 
