@@ -42,7 +42,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (strtotime($fecha_fin) < strtotime($fecha_inicio))
                 throw new Exception("La fecha fin no puede ser menor a la fecha inicio.");
 
-            // Si es porcentaje, validar %
             if ($tipo === 'PORCENTAJE') {
 
                 if ($porcentaje < 1 || $porcentaje > 100)
@@ -53,11 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // 2X1  no usan porcentaje
                 $porcentaje = 0;
             }
-
-            //no es necesario
-            /*
-            if (empty($productos))
-                throw new Exception("Selecciona al menos un producto.");*/
 
 
             $stmt = $pdo->prepare("
@@ -218,29 +212,7 @@ foreach ($relaciones as $r) {
 
 <div class="body-inv">
 
-<<<<<<< HEAD
-    <div class="card">
-        <h2>Crear promoción</h2>
-        <form method="POST">
-            <input type="hidden" name="accion" value="crear">
-            <p>ID promoción
-                <input type="number" name="id_promo" value="<?= $max_id ?>" required>
-            </p>
-            <p>Nombre
-                <input type="text" name="nombre" required>
-            </p>
-            <p>Tipo
-                <input type="text" name="tipo" placeholder="DESCUENTO" required>
-            </p>
-            <p>Porcentaje
-                <input type="number" name="porcentaje" min="1" max="100" required>
-            </p>
-            <p>Fecha inicio
-                <input type="date" name="fecha_inicio" value="<?= date('Y-m-d') ?>" required>
-            </p>
-=======
     <main class="container wide">
->>>>>>> c26ef8744820de1b1b7ae12431b5317d4a505a76
 
         <div class="card shadow-sm">
 

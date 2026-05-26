@@ -146,10 +146,6 @@ foreach ($detalles_raw as $d) {
             <input type="hidden" name="accion" value="registrar">
 
             <div class="row">
-
-                <!-- Proveedor -->
-                <!-- NOTA: el select NO tiene name porque cuando está disabled
-                     el navegador no lo envía. El hidden sí se envía siempre. -->
                 <div class="field">
                     <label>Proveedor</label>
                     <input type="hidden" name="id_proveedor" id="hid-proveedor" value="">
@@ -164,9 +160,7 @@ foreach ($detalles_raw as $d) {
                     </select>
                 </div>
 
-                <!-- Fecha -->
-                <!-- NOTA: tampoco tiene required porque cuando está disabled
-                     el required bloquea el submit aunque el valor esté bien -->
+  
                 <div class="field">
                     <label>Fecha de recepción</label>
                     <input type="hidden" name="fecha" id="hid-fecha" value="<?= date('Y-m-d') ?>">
@@ -176,7 +170,7 @@ foreach ($detalles_raw as $d) {
 
             </div>
 
-            <!-- Agregar producto -->
+
             <div class="row" style="align-items:flex-end; margin-top:16px;">
                 <div class="field" style="flex:2;">
                     <label>Producto</label>
