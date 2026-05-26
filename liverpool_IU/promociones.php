@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($nombre === '')
                 throw new Exception("El nombre es obligatorio.");
 
-            if (!in_array($tipo, ['PORCENTAJE', '2X1']))
+            if (!in_array($tipo, ['DESCUENTO', '2X1']))
                 throw new Exception("Tipo de promoción inválido.");
 
             if ($fecha_inicio === '' || $fecha_fin === '')
@@ -42,16 +42,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (strtotime($fecha_fin) < strtotime($fecha_inicio))
                 throw new Exception("La fecha fin no puede ser menor a la fecha inicio.");
 
-            if ($tipo === 'PORCENTAJE') {
+            // Si es porcentaje, validar %
+            if ($tipo === 'DESCUENTO') {
 
                 if ($porcentaje < 1 || $porcentaje > 100)
-                    throw new Exception("El porcentaje debe estar entre 1 y 100.");
+                    throw new Exception("El descuento debe estar entre 1 y 100.");
 
             } else {
 
                 // 2X1  no usan porcentaje
                 $porcentaje = 0;
             }
+
+            //no es necesario
+            /*
+            if (empty($productos))
+                throw new Exception("Selecciona al menos un producto.");*/
 
 
             $stmt = $pdo->prepare("
@@ -273,8 +279,8 @@ foreach ($relaciones as $r) {
                                 onchange="cambiarTipoPromo()"
                                 required
                             >
-                                <option value="PORCENTAJE">
-                                    Porcentaje
+                                <option value="DESCUENTO">
+                                    Descuento
                                 </option>
 
                                 <option value="2X1">
@@ -327,13 +333,10 @@ foreach ($relaciones as $r) {
                     </div>
 
                     <div class="field">
-
                         <label>Productos asociados</label>
-
                         <div class="checkbox-grid">
 
                             <?php foreach ($productos as $p): ?>
-
                                 <label class="check">
 
                                     <input
@@ -345,11 +348,8 @@ foreach ($relaciones as $r) {
                                     <?= htmlspecialchars($p['nombre']) ?>
 
                                 </label>
-
                             <?php endforeach; ?>
-
                         </div>
-
                     </div>
 
                     <div class="actions">
@@ -400,7 +400,7 @@ foreach ($relaciones as $r) {
 
                             <td>
 
-                                <?php if ($p['tipo'] === 'PORCENTAJE'): ?>
+                                <?php if ($p['tipo'] === 'DESCUENTO'): ?>
 
                                     <span class="mb-3 fw-bold text-secondary off">
                                         %
@@ -418,7 +418,7 @@ foreach ($relaciones as $r) {
 
                             <td>
 
-                                <?php if ($p['tipo'] === 'PORCENTAJE'): ?>
+                                <?php if ($p['tipo'] === 'DESCUENTO'): ?>
 
                                     <?= $p['porcentaje'] ?>%
 
@@ -562,7 +562,7 @@ function cambiarTipoPromo() {
     const input = document.getElementById('inp-porcentaje');
 
 
-    if (tipo === 'PORCENTAJE') {
+    if (tipo === 'DESCUENTO') {
 
         campo.style.display = '';
 
@@ -583,7 +583,7 @@ function validarForm() {
 
     const tipo = document.getElementById('sel-tipo').value;
 
-    if (tipo === 'PORCENTAJE') {
+    if (tipo === 'DESCUENTO') {
 
         const pct = parseInt(
             document.getElementById('inp-porcentaje').value
